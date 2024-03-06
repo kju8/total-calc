@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TOTAL Calc</title>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <label for="mode">動作モード：</label>
+        <select id="mode" name="mode">
+          <option value="iidx">beatmania IIDX</option>
+          <option value="popn">pop'n music</option>
+          <option value="final">beatmania FINAL</option>
+          <option value="7th">beatmania 7th</option>
+          <option value="core">beatmania core/6th</option>
+          <option value="comp2">beatmania comp2/club/DCT</option>
+          <option value="5th">beatmania 5th</option>
+          <option value="4th">beatmania 4th</option>
+        </select>
+      </div>
+      <div>
+        <label for="notes">ノーツ数：</label>
+        <input
+          type="number"
+          id="notes"
+          name="notes"
+          min="1"
+          step="1"
+          value="1"
+        />
+      </div>
+      <div>
+        <label for="total">ノーツ数：</label>
+        <input id="total" name="total" readonly />
+      </div>
+    </div>
+    <script src="./main.js"></script>
+  </body>
+</html>
