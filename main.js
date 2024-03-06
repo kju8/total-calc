@@ -8,19 +8,27 @@ const TOTAL_FIX = {
 };
 const mode = document.getElementById("mode");
 const notes = document.getElementById("notes");
+const ratioElm = document.getElementById("ratio");
 const totalElm = document.getElementById("total");
+const onenote = document.getElementById("onenote");
+const recover = document.getElementById("recover");
 function totalCalc(event) {
   let total = 0;
   let note = notes.value - 0;
+  let ratio = (ratioElm.value - 0) / 100;
   if (mode.value === "iidx") {
-    total = (7.605 * note) / (0.01 * note + 6.5);
+    total = Math.max(260, (7.605 * note) / (0.01 * note + 6.5));
   } else if (mode.value === "popn") {
     total = (note * Math.floor(3072 / note)) / 10.24;
   } else {
     const fix = TOTAL_FIX[mode.value];
     total = (Math.floor(fix / note) * note) / 55;
   }
-  totalElm.value = Math.floor(total * 100) / 100;
+  total = Math.floor(total * ratio * 100) / 100;
+  totalElm.value = total;
+  const onenoteValue = Math.floor((total * 1000000) / note) / 1000000;
+  onenote.value = onenoteValue;
+  recover.value = Math.ceil(100 / onenoteValue);
 }
 
-[mode, notes].forEach((e) => e.addEventListener("change", totalCalc));
+[mode, notes, ratioElm].forEach((e) => e.addEventListener("change", totalCalc));

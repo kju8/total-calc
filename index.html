@@ -13,6 +13,7 @@
     <title>TOTAL Calc</title>
   </head>
   <body>
+    <h1>#TOTAL Calc</h1>
     <div class="container">
       <div>
         <label for="mode">動作モード：</label>
@@ -39,8 +40,27 @@
         />
       </div>
       <div>
+        <label for="ratio">倍率：</label>
+        <input
+          type="number"
+          id="ratio"
+          name="ratio"
+          min="1"
+          step="0.1"
+          value="100"
+        />
+      </div>
+      <div>
         <label for="total">#TOTAL：</label>
-        <input id="total" name="total" readonly value="240.15" />
+        <input id="total" name="total" readonly value="260" />
+      </div>
+      <div>
+        <label for="onenote">1ノーツの回復量：</label>
+        <input id="onenote" name="onenote" readonly value="0.866666" />
+      </div>
+      <div>
+        <label for="recover">0%から100%まで回復するのに必要なノーツ：</label>
+        <input id="recover" name="recover" readonly value="116" />
       </div>
     </div>
     <script src="./main.js"></script>
