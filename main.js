@@ -20,7 +20,7 @@ function totalCalc(event) {
     const fix = TOTAL_FIX[mode.value];
     total = (Math.floor(fix / note) * note) / 55;
   }
-  totalElm.value = total;
+  totalElm.value = Math.floor(total * 100) / 100;
 }
 
 [mode, notes].forEach((e) => e.addEventListener("change", totalCalc));

@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Sans:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="./main.css" />
     <title>TOTAL Calc</title>
   </head>
   <body>
@@ -28,12 +35,12 @@
           name="notes"
           min="1"
           step="1"
-          value="1"
+          value="300"
         />
       </div>
       <div>
-        <label for="total">ノーツ数：</label>
-        <input id="total" name="total" readonly />
+        <label for="total">#TOTAL：</label>
+        <input id="total" name="total" readonly value="240.15" />
       </div>
     </div>
     <script src="./main.js"></script>
