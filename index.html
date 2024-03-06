@@ -40,7 +40,7 @@
         />
       </div>
       <div>
-        <label for="ratio">倍率：</label>
+        <label for="ratio">倍率（%）：</label>
         <input
           type="number"
           id="ratio"
@@ -63,6 +63,15 @@
         <input id="recover" name="recover" readonly value="116" />
       </div>
     </div>
+    <details>
+      <summary>使い方</summary>
+      <p>
+        『ノーツ数』にあなたの制作しているBMSのトータルノーツ数を入力してください。本家準拠にする場合、『倍率』を100にしておけば、『#TOTAL』をそのまま設定すればよいです。
+      </p>
+      <p>
+        もし、特定の難所からの回復量を調整したい場合、その場所以降のノーツ数と『0%から100%まで回復するのに必要なノーツ』を比較し、倍率を調整してください。
+      </p>
+    </details>
     <script src="./main.js"></script>
   </body>
 </html>

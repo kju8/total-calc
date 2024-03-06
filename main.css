@@ -11,6 +11,7 @@ body {
   font-style: normal;
 
   font-size: 16px;
+  background-color: rbg(255, 255, 255);
 }
 
 h1 {
@@ -50,4 +51,26 @@ h1 {
 
 .container > * input {
   text-align: right;
+}
+
+details {
+  margin: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5em;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+summary {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+details[open] > summary {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+p {
+  text-indent: 1em;
+  margin-top: 0.4em;
 }
