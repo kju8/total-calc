@@ -26,9 +26,8 @@ function totalCalc(event) {
   }
   total = Math.floor(total * ratio * 100) / 100;
   totalElm.value = total;
-  const onenoteValue = Math.floor((total * 1000000) / note) / 1000000;
-  onenote.value = onenoteValue;
-  recover.value = Math.ceil(100 / onenoteValue);
+  onenote.value = Math.floor((total * 1000000) / note) / 1000000;
+  recover.value = Math.ceil((100 * note) / total);
 }
 
 [mode, notes, ratioElm].forEach((e) => e.addEventListener("change", totalCalc));
