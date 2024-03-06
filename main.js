@@ -25,8 +25,8 @@ function totalCalc(event) {
     total = (Math.floor(fix / note) * note) / 55;
   }
   total = Math.floor(total * ratio * 100) / 100;
-  totalElm.value = total;
-  onenote.value = Math.floor((total * 1000000) / note) / 1000000;
+  totalElm.value = total.toFixed(2);
+  onenote.value = (Math.floor((total * 1000000) / note) / 1000000).toFixed(6);
   recover.value = Math.ceil((100 * note) / total);
 }
 
