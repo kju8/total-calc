@@ -20,6 +20,8 @@ function totalCalc(event) {
     total = Math.max(260, (7.605 * note) / (0.01 * note + 6.5));
   } else if (mode.value === "popn") {
     total = (note * Math.floor(3072 / note)) / 10.24;
+  } else if (mode.value === "lr2") {
+    total = 160.0 + (note + Math.min(Math.max(note-400, 0), 200))*0.16;
   } else {
     const fix = TOTAL_FIX[mode.value];
     total = (Math.floor(fix / note) * note) / 55;
