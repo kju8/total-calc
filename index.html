@@ -9,6 +9,11 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Sans:wght@100..900&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css"
+    />
     <link rel="stylesheet" type="text/css" href="./main.css" />
     <title>TOTAL Calc</title>
   </head>
@@ -68,6 +73,8 @@
         <label for="recover">0%から100%まで回復するのに必要なノーツ：</label>
         <input id="recover" name="recover" readonly value="116" />
       </div>
+      <div id="total_graph" style="height: 400px"></div>
+      <div id="recovery_graph" style="height: 400px"></div>
     </div>
     <details>
       <summary>使い方</summary>
@@ -81,6 +88,11 @@
     <footer>
       <a href="https://github.com/kju8/total-calc">詳細な計算式</a>
     </footer>
+    <script
+      type="text/javascript"
+      charset="UTF-8"
+      src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"
+    ></script>
     <script src="./main.js"></script>
   </body>
 </html>
