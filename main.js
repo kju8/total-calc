@@ -18,10 +18,25 @@ function totalCalc(event) {
   let ratio = (ratioElm.value - 0) / 100;
   if (mode.value === "iidx") {
     total = Math.max(260, (7.605 * note) / (0.01 * note + 6.5));
+  } else if (mode.value === "iidx_old") {
+    total =
+      note < 400
+        ? 200 + note / 5
+        : note < 600
+        ? 280 + (note - 400) / 2.5
+        : 360 + (note - 600) / 5;
   } else if (mode.value === "popn") {
     total = (note * Math.floor(3072 / note)) / 10.24;
   } else if (mode.value === "lr2") {
-    total = 160.0 + (note + Math.min(Math.max(note-400, 0), 200))*0.16;
+    total = 160.0 + (note + Math.min(Math.max(note - 400, 0), 200)) * 0.16;
+  } else if (mode.value === "nazo") {
+    total = Math.max(130, 100 + note);
+  } else if (mode.value === "nanasi") {
+    total = 350;
+  } else if (mode.value === "fgt") {
+    total = 100 + note / 8;
+  } else if (mode.value === "bm98") {
+    total = 200 + note;
   } else {
     const fix = TOTAL_FIX[mode.value];
     total = (Math.floor(fix / note) * note) / 55;

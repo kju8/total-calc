@@ -1,5 +1,6 @@
 # 実装中の計算式
-## IIDX
+
+## IIDX / beatoraja
 
 $Total = \max\left(260, \frac{7.605 * note}{0.01 * note + 6.5}\right)$
 
@@ -15,10 +16,27 @@ $Total = \frac{note * \lfloor \frac{3072}{note} \rfloor}{10.24}$
 
 $Total = \frac{note * \lfloor \frac{fix}{note} \rfloor}{55}$
 
-fix値は以下の通り。
+fix 値は以下の通り。
+
 - FINAL: 14933
 - 7th: 14000
 - core: 16800
 - comp2: 12133
 - 5th: 13066
 - 4th: 20533
+
+## Lunatic Rave 2 / LR2oraja
+
+$Total = 160.0 + (note + \min(\max(note - 400, 0), 200)) * 0.16$
+
+## forgetalia++
+
+$Total = 100 + \frac{note}{8}$
+
+## ナナシグルーブ
+
+$Total = 350$
+
+## BM98
+
+$Total = \max(130, 100 + note)$
