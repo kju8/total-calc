@@ -30,7 +30,7 @@ h1 {
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-.container > * {
+.container > *:not(.graph_container) {
   display: flex;
   margin: 1em;
   flex: 1 0 auto;
@@ -43,7 +43,7 @@ h1 {
 }
 
 .container > * select,
-.container > * input {
+.container > *:not(.graph_container) input {
   font-size: 0.9rem;
   padding: 0.25em;
   flex: 1 0 auto;
@@ -73,6 +73,21 @@ details[open] > summary {
 p {
   text-indent: 1em;
   margin-top: 0.4em;
+}
+
+.selecter {
+  font-size: 0.7rem;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.selecter > * {
+  padding: 0 1rem;
+}
+
+input[type="radio"] {
+  height: 0.7rem;
 }
 
 footer {

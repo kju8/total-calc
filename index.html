@@ -73,8 +73,74 @@
         <label for="recover">0%から100%まで回復するのに必要なノーツ：</label>
         <input id="recover" name="recover" readonly value="116" />
       </div>
-      <div id="total_graph" style="height: 400px"></div>
-      <div id="recovery_graph" style="height: 400px"></div>
+
+      <div class="graph_container">
+        <div id="total_graph" style="width: 100%; height: 400px"></div>
+        <div class="selecter">
+          <div>
+            <input
+              type="radio"
+              id="totalNormal"
+              name="totalGraphMode"
+              value="normal"
+              checked
+            />
+            <label for="totalNormal">通常</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="totalSemiLog"
+              name="totalGraphMode"
+              value="semiLog"
+            />
+            <label for="totalSemiLog">片対数</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="totalLog"
+              name="totalGraphMode"
+              value="log"
+            />
+            <label for="totalLog">両対数</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="graph_container">
+        <div id="recovery_graph" style="width: 100%; height: 400px"></div>
+        <div class="selecter">
+          <div>
+            <input
+              type="radio"
+              id="recoverNormal"
+              name="recoverGraphMode"
+              value="normal"
+              checked
+            />
+            <label for="recoverNormal">通常</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="recoverSemiLog"
+              name="recoverGraphMode"
+              value="semiLog"
+            />
+            <label for="recoverSemiLog">片対数</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="recoverLog"
+              name="recoverGraphMode"
+              value="log"
+            />
+            <label for="recoverLog">両対数</label>
+          </div>
+        </div>
+      </div>
     </div>
     <details>
       <summary>使い方</summary>
