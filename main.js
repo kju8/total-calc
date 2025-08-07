@@ -418,6 +418,7 @@ const CalcModes = {
     });
     return mode;
   })(),
+
   bm98: (() => {
     const mode = new CalcMode((note) => 200 + note);
     mode.addRecoverCurve((x) => 1, {
@@ -428,12 +429,65 @@ const CalcModes = {
     });
     return mode;
   })(),
+
   final: BmCalcMode("final"),
   "7th": BmCalcMode("7th"),
   core: BmCalcMode("core"),
   comp2: BmCalcMode("comp2"),
   "5th": BmCalcMode("5th"),
   "4th": BmCalcMode("4th"),
+
+  divide: (() => {
+    const mode = new CalcMode(
+      (note) =>
+        (Math.max(260, (7.605 * note) / (0.01 * note + 6.5)) *
+          (note * Math.floor(3072 / note))) /
+        10.24 /
+        300
+    );
+    mode.addCurve((_) => 260, {
+      color: "red",
+      opacity: 0.2,
+      dash: 2,
+      pos: [0, (260 * 6.5) / 5.005],
+    });
+    mode.addCurve((x) => (260 * (300 - (300 * x) / 3072)) / 300, {
+      color: "blue",
+      opacity: 0.2,
+      dash: 2,
+      pos: [0, (260 * 6.5) / 5.005],
+    });
+    mode.addCurve((x) => (7.605 * x) / (0.01 * x + 6.5), {
+      color: "red",
+      opacity: 0.5,
+      dash: 2,
+    });
+    mode.addCurve(
+      (x) =>
+        (((7.605 * x) / (0.01 * x + 6.5)) * (300 - (300 * x) / 3072)) / 300,
+      {
+        color: "blue",
+        opacity: 0.5,
+        dash: 2,
+        pos: [0, 3072],
+      }
+    );
+    return mode;
+  })(),
+
+  divide_old: (() => {
+    const mode = new CalcMode(
+      (note) =>
+        (((note * Math.floor(3072 / note)) / 10.24) *
+          (note < 400
+            ? 200 + note / 5
+            : note < 600
+            ? 280 + (note - 400) / 2.5
+            : 360 + (note - 600) / 5)) /
+        300
+    );
+    return mode;
+  })(),
 };
 
 function redrawTotalGraph() {
