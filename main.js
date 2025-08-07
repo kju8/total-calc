@@ -399,6 +399,12 @@ const CalcModes = {
       dash: 5,
       recoverOnly: true,
     });
+    mode.addRecoverCurve((_) => 0.16 * 2, {
+      color: "purple",
+      opacity: 0.2,
+      dash: 5,
+      recoverOnly: true,
+    });
     return mode;
   })(),
 
