@@ -338,6 +338,12 @@ const CalcModes = {
       dash: 5,
       recoverOnly: true,
     });
+    mode.addRecoverCurve((x) => 0.4, {
+      color: "purple",
+      opacity: 0.2,
+      dash: 5,
+      recoverOnly: true,
+    });
     return mode;
   })(),
 
@@ -398,6 +404,18 @@ const CalcModes = {
 
   nazo: (() => {
     const mode = new CalcMode((note) => Math.max(130, 100 + note));
+    mode.addCurve((x) => 130, {
+      color: "red",
+      opacity: 0.5,
+      dash: 2,
+      pos: [30],
+    });
+    mode.addCurve((x) => 100 + x, {
+      color: "blue",
+      opacity: 0.5,
+      dash: 2,
+      pos: [0, 30],
+    });
     mode.addRecoverCurve((x) => 1, {
       color: "black",
       opacity: 0.5,
