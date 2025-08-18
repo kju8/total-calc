@@ -1,4 +1,4 @@
-let totalGraph, recoveryGraph;
+let totalGraph, recoveryGraph, requiredGraph;
 
 const mode = document.getElementById("mode");
 const notes = document.getElementById("notes");
@@ -30,7 +30,7 @@ class Curve {
     board.create(
       "functiongraph",
       [
-        (x) => fixY(this.#_func(fixX(x)) * ratio),
+        (x) => fixY(this.#_func(fixX(x), ratio)),
         this.#_minX != 0 && mode == "log"
           ? Math.log10(this.#_minX)
           : this.#_minX,
@@ -186,14 +186,36 @@ class CalcMode {
   #calculator;
   #curves;
   #recovCurves;
+  #reqCurves;
   constructor(calculator) {
     this.#calculator = calculator;
     this.#curves = [];
     this.#recovCurves = [];
-    this.addCurve(calculator, {
+    this.#reqCurves = [];
+    this.addCurve((x, ratio) => calculator(x) * ratio, {
       color: "black",
       pos: [0],
+      totalOnly: true,
     });
+    this.addRecoverCurve(
+      (x, ratio) => Math.floor(calculator(x) * ratio * 100) / 100 / x,
+      {
+        color: "black",
+        pos: [0],
+        recoverOnly: true,
+      }
+    );
+    this.#reqCurves.push(
+      new Curve(
+        (x, ratio) =>
+          Math.ceil((10000 * x) / Math.floor(calculator(x) * ratio * 100)),
+        {
+          color: "black",
+          pos: [0],
+          totalOnly: true,
+        }
+      )
+    );
   }
 
   total(note) {
@@ -204,24 +226,32 @@ class CalcMode {
     return Math.floor(this.total(note) * ratio * 100) / 100;
   }
 
-  recoveryRate(note) {
-    return this.total(note) / note;
+  recoveryRate(note, ratio) {
+    return this.fixTotal(note, ratio) / note;
   }
 
   fixRecoveryRate(note, ratio) {
-    return Math.floor((this.fixTotal(note, ratio) * 1000000) / note) / 1000000;
+    return Math.floor(this.recoveryRate(note, ratio) * 1000000) / 1000000;
+  }
+
+  requiredNotes(note, ratio) {
+    return 100 / this.recoveryRate(note, ratio);
   }
 
   addCurve(calc, attr) {
     this.#curves.push(new Curve(calc, attr));
-    if (!attr.totalOnly)
-      this.#recovCurves.push(new Curve((x) => calc(x) / x, attr));
+    if (!attr.totalOnly) {
+      this.#recovCurves.push(new Curve((x, ratio) => calc(x, ratio) / x, attr));
+      this.#reqCurves.push(
+        new Curve((x, ratio) => (100 * x) / calc(x, ratio), attr)
+      );
+    }
   }
 
   addRecoverCurve(calc, attr) {
     this.#recovCurves.push(new Curve(calc, attr));
     if (!attr.recoverOnly)
-      this.#curves.push(new Curve((x) => calc(x) * x, attr));
+      this.#curves.push(new Curve((x, ratio) => calc(x, ratio) * x, attr));
   }
 
   drawTotal(graph, note, ratio) {
@@ -244,7 +274,7 @@ class CalcMode {
     this.#recovCurves.forEach((v) => graph.drawCurve(v, ratio));
     graph.drawPoint(
       new Point(
-        [note, this.recoveryRate(note) * ratio],
+        [note, this.recoveryRate(note, ratio)],
         {
           size: 2,
           color: "red",
@@ -255,18 +285,34 @@ class CalcMode {
       )
     );
   }
+
+  drawRequired(graph, note, ratio) {
+    this.#reqCurves.forEach((v) => graph.drawCurve(v, ratio));
+    graph.drawPoint(
+      new Point(
+        [note, Math.ceil(100 / this.recoveryRate(note, ratio))],
+        {
+          size: 2,
+          color: "red",
+          withLabel: false,
+        },
+        `(${note}, ${Math.ceil(100 / this.recoveryRate(note, ratio))})`,
+        ["right", "bottom"]
+      )
+    );
+  }
 }
 
 function BmCalcMode(fixmode) {
   const mode = new CalcMode(
     (note) => (Math.floor(TOTAL_FIX[fixmode] / note) * note) / 55
   );
-  mode.addCurve((x) => TOTAL_FIX[fixmode] / 55, {
+  mode.addCurve((_, ratio) => (TOTAL_FIX[fixmode] * ratio) / 55, {
     color: "red",
     opacity: 0.5,
     dash: 2,
   });
-  mode.addCurve((x) => (TOTAL_FIX[fixmode] - x) / 55, {
+  mode.addCurve((x, ratio) => ((TOTAL_FIX[fixmode] - x) * ratio) / 55, {
     color: "blue",
     opacity: 0.5,
     dash: 2,
@@ -280,19 +326,19 @@ const CalcModes = {
     const mode = new CalcMode((note) =>
       Math.max(260, (7.605 * note) / (0.01 * note + 6.5))
     );
-    mode.addCurve((x) => (7.605 * x) / (0.01 * x + 6.5), {
+    mode.addCurve((x, ratio) => (7.605 * x * ratio) / (0.01 * x + 6.5), {
       color: "red",
       opacity: 0.5,
       dash: 2,
       pos: [0, (260 * 6.5) / 5.005],
     });
-    mode.addCurve((x) => 260, {
+    mode.addCurve((_, ratio) => 260 * ratio, {
       color: "blue",
       opacity: 0.5,
       dash: 2,
       pos: [(260 * 6.5) / 5.005],
     });
-    mode.addCurve((x) => 760.5, {
+    mode.addCurve((_, ratio) => 760.5 * ratio, {
       color: "black",
       opacity: 0.5,
       dash: 5,
@@ -308,37 +354,37 @@ const CalcModes = {
         ? 280 + (note - 400) / 2.5
         : 360 + (note - 600) / 5
     );
-    mode.addCurve((x) => 200 + x / 5, {
+    mode.addCurve((x, ratio) => (200 + x / 5) * ratio, {
       color: "red",
       opacity: 0.5,
       dash: 2,
       pos: [400],
     });
-    mode.addCurve((x) => 280 + (x - 400) / 2.5, {
+    mode.addCurve((x, ratio) => (280 + (x - 400) / 2.5) * ratio, {
       color: "purple",
       opacity: 0.5,
       dash: 2,
       pos: [0, 400],
     });
-    mode.addCurve((x) => 280 + (x - 400) / 2.5, {
+    mode.addCurve((x, ratio) => (280 + (x - 400) / 2.5) * ratio, {
       color: "purple",
       opacity: 0.5,
       dash: 2,
       pos: [600],
     });
-    mode.addCurve((x) => 360 + (x - 600) / 5, {
+    mode.addCurve((x, ratio) => (360 + (x - 600) / 5) * ratio, {
       color: "blue",
       opacity: 0.5,
       dash: 2,
       pos: [0, 600],
     });
-    mode.addRecoverCurve((x) => 0.2, {
+    mode.addRecoverCurve((_, ratio) => 0.2 * ratio, {
       color: "black",
       opacity: 0.5,
       dash: 5,
       recoverOnly: true,
     });
-    mode.addRecoverCurve((x) => 0.4, {
+    mode.addRecoverCurve((_, ratio) => 0.4 * ratio, {
       color: "purple",
       opacity: 0.2,
       dash: 5,
@@ -351,12 +397,12 @@ const CalcModes = {
     const mode = new CalcMode(
       (note) => (note * Math.floor(3072 / note)) / 10.24
     );
-    mode.addCurve((x) => 300, {
+    mode.addCurve((_, ratio) => 300 * ratio, {
       color: "red",
       opacity: 0.5,
       dash: 2,
     });
-    mode.addCurve((x) => 300 - (300 * x) / 3072, {
+    mode.addCurve((x, ratio) => (300 - (300 * x) / 3072) * ratio, {
       color: "blue",
       opacity: 0.5,
       dash: 2,
@@ -369,37 +415,37 @@ const CalcModes = {
     const mode = new CalcMode(
       (note) => 160.0 + (note + Math.min(Math.max(note - 400, 0), 200)) * 0.16
     );
-    mode.addCurve((x) => 160 + x * 0.16, {
+    mode.addCurve((x, ratio) => (160 + x * 0.16) * ratio, {
       color: "red",
       opacity: 0.5,
       dash: 2,
       pos: [400],
     });
-    mode.addCurve((x) => 160 + (2 * x - 400) * 0.16, {
+    mode.addCurve((x, ratio) => (160 + (2 * x - 400) * 0.16) * ratio, {
       color: "purple",
       opacity: 0.5,
       dash: 2,
       pos: [0, 400],
     });
-    mode.addCurve((x) => 160 + (2 * x - 400) * 0.16, {
+    mode.addCurve((x, ratio) => (160 + (2 * x - 400) * 0.16) * ratio, {
       color: "purple",
       opacity: 0.5,
       dash: 2,
       pos: [600],
     });
-    mode.addCurve((x) => 160 + (x + 200) * 0.16, {
+    mode.addCurve((x, ratio) => (160 + (x + 200) * 0.16) * ratio, {
       color: "blue",
       opacity: 0.5,
       dash: 2,
       pos: [0, 600],
     });
-    mode.addRecoverCurve((x) => 0.16, {
+    mode.addRecoverCurve((_, ratio) => 0.16 * ratio, {
       color: "black",
       opacity: 0.5,
       dash: 5,
       recoverOnly: true,
     });
-    mode.addRecoverCurve((_) => 0.16 * 2, {
+    mode.addRecoverCurve((_, ratio) => 0.16 * 2 * ratio, {
       color: "purple",
       opacity: 0.2,
       dash: 5,
@@ -410,19 +456,19 @@ const CalcModes = {
 
   nazo: (() => {
     const mode = new CalcMode((note) => Math.max(130, 100 + note));
-    mode.addCurve((x) => 130, {
+    mode.addCurve((_, ratio) => 130 * ratio, {
       color: "red",
       opacity: 0.5,
       dash: 2,
       pos: [30],
     });
-    mode.addCurve((x) => 100 + x, {
+    mode.addCurve((x, ratio) => (100 + x) * ratio, {
       color: "blue",
       opacity: 0.5,
       dash: 2,
       pos: [0, 30],
     });
-    mode.addRecoverCurve((x) => 1, {
+    mode.addRecoverCurve((_, ratio) => ratio, {
       color: "black",
       opacity: 0.5,
       dash: 5,
@@ -434,7 +480,7 @@ const CalcModes = {
   nanasi: new CalcMode((_) => 350),
   fgt: (() => {
     const mode = new CalcMode((note) => 100 + note / 8);
-    mode.addRecoverCurve((x) => 1 / 8, {
+    mode.addRecoverCurve((_, ratio) => 0.125 * ratio, {
       color: "black",
       opacity: 0.5,
       dash: 5,
@@ -445,7 +491,7 @@ const CalcModes = {
 
   bm98: (() => {
     const mode = new CalcMode((note) => 200 + note);
-    mode.addRecoverCurve((x) => 1, {
+    mode.addRecoverCurve((_, ratio) => ratio, {
       color: "black",
       opacity: 0.5,
       dash: 5,
@@ -469,26 +515,30 @@ const CalcModes = {
         10.24 /
         300
     );
-    mode.addCurve((_) => 260, {
+    mode.addCurve((_, ratio) => 260 * ratio, {
       color: "red",
       opacity: 0.2,
       dash: 2,
       pos: [0, (260 * 6.5) / 5.005],
     });
-    mode.addCurve((x) => (260 * (300 - (300 * x) / 3072)) / 300, {
-      color: "blue",
-      opacity: 0.2,
-      dash: 2,
-      pos: [0, (260 * 6.5) / 5.005],
-    });
-    mode.addCurve((x) => (7.605 * x) / (0.01 * x + 6.5), {
+    mode.addCurve(
+      (x, ratio) => (260 * (300 - (300 * x) / 3072) * ratio) / 300,
+      {
+        color: "blue",
+        opacity: 0.2,
+        dash: 2,
+        pos: [0, (260 * 6.5) / 5.005],
+      }
+    );
+    mode.addCurve((x, ratio) => (7.605 * x * ratio) / (0.01 * x + 6.5), {
       color: "red",
       opacity: 0.5,
       dash: 2,
     });
     mode.addCurve(
-      (x) =>
-        (((7.605 * x) / (0.01 * x + 6.5)) * (300 - (300 * x) / 3072)) / 300,
+      (x, ratio) =>
+        (((7.605 * x) / (0.01 * x + 6.5)) * (300 - (300 * x) / 3072) * ratio) /
+        300,
       {
         color: "blue",
         opacity: 0.5,
@@ -534,6 +584,16 @@ function redrawRecoverGraph() {
   CalcModes[mode.value].drawRecover(recoveryGraph, note, ratio);
 }
 
+function redrawRequiredGraph() {
+  const note = notes.value - 0;
+  const ratio = (ratioElm.value - 0) / 100;
+  const nowCalcMode = CalcModes[mode.value];
+  const total = nowCalcMode.fixTotal(note, ratio);
+
+  requiredGraph.init([note, Math.ceil((100 * note) / total)]);
+  CalcModes[mode.value].drawRequired(requiredGraph, note, ratio);
+}
+
 [mode, notes, ratioElm].forEach((e) =>
   e.addEventListener("change", (event) => {
     const note = notes.value - 0;
@@ -546,6 +606,7 @@ function redrawRecoverGraph() {
 
     redrawTotalGraph();
     redrawRecoverGraph();
+    redrawRequiredGraph();
   })
 );
 
@@ -567,14 +628,27 @@ for (let index = 0; index < recoverModes.length; index++) {
   });
 }
 
+const requiredModes = document.getElementsByName("requiredGraphMode");
+for (let index = 0; index < requiredModes.length; index++) {
+  const element = requiredModes[index];
+  element.addEventListener("change", (e) => {
+    requiredGraph.changeMode(e.target.value);
+    redrawRequiredGraph();
+  });
+}
+
 window.addEventListener("load", (event) => {
   window.addEventListener("resize", (event) => {
     redrawTotalGraph();
     redrawRecoverGraph();
+    redrawRequiredGraph();
   });
   totalGraph = new Graph("total_graph", [300, 260], [400, 310]);
   CalcModes.iidx.drawTotal(totalGraph, 300, 1);
 
   recoveryGraph = new Graph("recovery_graph", [300, 0.866666], [400, 0.6]);
   CalcModes.iidx.drawRecover(recoveryGraph, 300, 1);
+
+  requiredGraph = new Graph("required_graph", [300, 116], [400, 130]);
+  CalcModes.iidx.drawRequired(requiredGraph, 300, 1);
 });

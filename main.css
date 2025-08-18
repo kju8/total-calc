@@ -27,7 +27,7 @@ h1 {
 .container {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(12, 1fr);
 }
 
 .container > *:not(.graph_container) {
@@ -37,9 +37,16 @@ h1 {
   flex-direction: column;
 }
 
-.container > *:nth-child(n + 5) {
-  grid-column: span 2;
-  flex-direction: row;
+label {
+  white-space: nowrap;
+}
+
+.container > *:nth-child(-n + 4) {
+  grid-column: span 3;
+}
+
+.container > *:nth-child(n + 5):nth-child(-n + 6) {
+  grid-column: span 6;
 }
 
 .container > * select,
@@ -76,6 +83,7 @@ details > p {
 }
 
 .graph_container {
+  grid-column: span 4;
   padding: 0 0.5rem;
 }
 
@@ -109,4 +117,15 @@ footer {
 footer > a {
   color: gray;
   text-decoration: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .graph_container {
+    grid-column: span 12;
+  }
+
+  .graph_div {
+    width: 100%;
+    height: 300px;
+  }
 }

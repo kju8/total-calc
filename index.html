@@ -86,6 +86,7 @@
       </div>
 
       <div class="graph_container">
+        <label>#TOTAL グラフ：</label>
         <div id="total_graph" class="graph_div"></div>
         <div class="selecter">
           <div>
@@ -120,6 +121,7 @@
       </div>
 
       <div class="graph_container">
+        <label>回復量グラフ：</label>
         <div id="recovery_graph" class="graph_div"></div>
         <div class="selecter">
           <div>
@@ -149,6 +151,41 @@
               value="log"
             />
             <label for="recoverLog">両対数</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="graph_container">
+        <label>必要ノーツグラフ：</label>
+        <div id="required_graph" class="graph_div"></div>
+        <div class="selecter">
+          <div>
+            <input
+              type="radio"
+              id="requiredNormal"
+              name="requiredGraphMode"
+              value="normal"
+              checked
+            />
+            <label for="requiredNormal">通常</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="requiredSemiLog"
+              name="requiredGraphMode"
+              value="semiLog"
+            />
+            <label for="requiredSemiLog">片対数</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="requiredLog"
+              name="requiredGraphMode"
+              value="log"
+            />
+            <label for="requiredLog">両対数</label>
           </div>
         </div>
       </div>
