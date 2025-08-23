@@ -27,7 +27,7 @@ class Curve {
     const fixX = (x) => (mode == "log" ? Math.pow(10, x) : x);
     const fixY = (y) => (mode != "normal" ? Math.log10(y) : y);
 
-    board.create(
+    return board.create(
       "functiongraph",
       [
         (x) => fixY(this.#_func(fixX(x), ratio)),
@@ -171,6 +171,19 @@ class Graph {
   drawPoint(point) {
     point.draw(this.#graphObj, this.#graphMode);
   }
+
+  drawArea(func, color, inv = false) {
+    const line = new Curve(func, { opacity: 0 }).draw(
+      this.#graphObj,
+      this.#graphMode,
+      1
+    );
+    this.#graphObj.create("inequality", [line], {
+      inverse: inv,
+      fillColor: color,
+      fillOpacity: 0.05,
+    });
+  }
 }
 
 const TOTAL_FIX = {
@@ -256,6 +269,8 @@ class CalcMode {
 
   drawTotal(graph, note, ratio) {
     this.#curves.forEach((v) => graph.drawCurve(v, ratio));
+    graph.drawArea((v) => 0.18 * v, "red");
+    graph.drawArea((v) => 0.25 * v, "blue", true);
     graph.drawPoint(
       new Point(
         [note, this.total(note) * ratio],
@@ -272,6 +287,8 @@ class CalcMode {
 
   drawRecover(graph, note, ratio) {
     this.#recovCurves.forEach((v) => graph.drawCurve(v, ratio));
+    graph.drawArea((_) => 0.18, "red");
+    graph.drawArea((_) => 0.25, "blue", true);
     graph.drawPoint(
       new Point(
         [note, this.recoveryRate(note, ratio)],
@@ -288,6 +305,8 @@ class CalcMode {
 
   drawRequired(graph, note, ratio) {
     this.#reqCurves.forEach((v) => graph.drawCurve(v, ratio));
+    graph.drawArea((_) => 100 / 0.18, "red", true);
+    graph.drawArea((_) => 100 / 0.25, "blue");
     graph.drawPoint(
       new Point(
         [note, Math.ceil(100 / this.recoveryRate(note, ratio))],
