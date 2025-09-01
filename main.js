@@ -12,6 +12,7 @@ class Curve {
   #_func;
   #_color;
   #_opacity;
+  #_visible;
   #_dash;
   #_minX;
   #_maxX;
@@ -20,6 +21,7 @@ class Curve {
     this.#_color = attr.color ?? "black";
     this.#_opacity = attr.opacity ?? 1;
     this.#_dash = attr.dash ?? 0;
+    this.#_visible = attr.visible ?? true;
     this.#_minX = attr.pos?.[0] ?? 0;
     this.#_maxX = attr.pos?.[1];
   }
@@ -43,6 +45,7 @@ class Curve {
         strokeColor: this.#_color,
         strokeOpacity: this.#_opacity,
         dash: this.#_dash,
+        visible: this.#_visible,
       }
     );
   }
@@ -174,16 +177,38 @@ class Graph {
   }
 
   drawArea(func, color, inv = false, opacity = 0.05) {
-    const line = new Curve(func, { opacity: 0 }).draw(
+    const line = new Curve(func, { visible: false }).draw(
       this.#graphObj,
       this.#graphMode,
       1
     );
-    this.#graphObj.create("inequality", [line], {
-      inverse: inv,
-      fillColor: color,
-      fillOpacity: opacity,
-    });
+    if (inv || this.#graphMode !== "normal") {
+      this.#graphObj.create("inequality", [line], {
+        inverse: inv,
+        fillColor: color,
+        fillOpacity: opacity,
+      });
+    } else {
+      const area = this.#graphObj.create("inequality", [line], {
+        inverse: false,
+        visible: false,
+      });
+      const line0 = new Curve((_) => 0, { visible: false }).draw(
+        this.#graphObj,
+        this.#graphMode,
+        1
+      );
+      const area0 = this.#graphObj.create("inequality", [line0], {
+        inverse: true,
+        visible: false,
+      });
+
+      this.#graphObj.create("curveintersection", [area, area0], {
+        strokeWidth: 0,
+        fillColor: color,
+        fillOpacity: opacity,
+      });
+    }
   }
 }
 
@@ -227,7 +252,9 @@ class CalcMode {
     this.#reqCurves.push(
       new Curve(
         (x, ratio) =>
-          Math.ceil((10000 * x) / Math.floor(calculator(x) * ratio * 100)),
+          Math.ceil(
+            (10000 * x) / Math.floor(calculator(Math.floor(x)) * ratio * 100)
+          ),
         {
           color: "black",
           pos: [0],
@@ -295,6 +322,7 @@ class CalcMode {
     this.#recovCurves.forEach((v) => graph.drawCurve(v, ratio));
     graph.drawArea((_) => 0.18, "red");
     graph.drawArea((_) => 0.25, "blue", true);
+    graph.drawArea((x) => 100 / x, "black", false, 0.4);
     graph.drawPoint(
       new Point(
         [note, this.recoveryRate(note, ratio)],
@@ -667,6 +695,19 @@ onenote.addEventListener("change", (event) => {
   const total_old = nowCalcMode.total(note);
   const ratio = Math.max(
     Math.floor((1000 * total_now) / total_old) / 1000,
+    0.01
+  );
+  ratioElm.value = Math.round(ratio * 1000) / 10;
+  refresh(nowCalcMode, note, ratio);
+});
+
+recover.addEventListener("change", (event) => {
+  const note = notes.value - 0;
+  const nowCalcMode = CalcModes[mode.value];
+  const total_now = (100 * note) / (recover.value - 0);
+  const total_old = nowCalcMode.total(note);
+  const ratio = Math.max(
+    Math.ceil((1000 * total_now) / total_old) / 1000,
     0.01
   );
   ratioElm.value = Math.round(ratio * 1000) / 10;
