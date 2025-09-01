@@ -119,6 +119,14 @@ footer > a {
   text-decoration: none;
 }
 
+#caution {
+  color: red;
+}
+
+#caution:not(.able) {
+  display: none;
+}
+
 @media screen and (max-width: 1024px) {
   .graph_container {
     grid-column: span 12;
