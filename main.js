@@ -343,8 +343,8 @@ class CalcMode {
 
   drawRequired(graph, note, ratio) {
     this.#reqCurves.forEach((v) => graph.drawCurve(v, ratio));
-    graph.drawArea((_) => 100 / 0.18, "red", true);
-    graph.drawArea((_) => 100 / 0.25, "blue");
+    graph.drawArea((_) => targetValue / 0.18, "red", true);
+    graph.drawArea((_) => targetValue / 0.25, "blue");
     graph.drawArea((x) => x, "black", true, 0.4);
     graph.drawPoint(
       new Point(
