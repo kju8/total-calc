@@ -7,6 +7,8 @@ const totalElm = document.getElementById("total");
 const onenote = document.getElementById("onenote");
 const recover = document.getElementById("recover");
 const caution = document.getElementById("caution");
+const target = document.getElementById("recover_target");
+let targetValue = 100;
 
 class Curve {
   #_func;
@@ -253,7 +255,8 @@ class CalcMode {
       new Curve(
         (x, ratio) =>
           Math.ceil(
-            (10000 * x) / Math.floor(calculator(Math.floor(x)) * ratio * 100)
+            (100 * targetValue * x) /
+              Math.floor(calculator(Math.floor(x)) * ratio * 100)
           ),
         {
           color: "black",
@@ -281,7 +284,7 @@ class CalcMode {
   }
 
   requiredNotes(note, ratio) {
-    return 100 / this.recoveryRate(note, ratio);
+    return targetValue / this.recoveryRate(note, ratio);
   }
 
   addCurve(calc, attr) {
@@ -289,7 +292,7 @@ class CalcMode {
     if (!attr.totalOnly) {
       this.#recovCurves.push(new Curve((x, ratio) => calc(x, ratio) / x, attr));
       this.#reqCurves.push(
-        new Curve((x, ratio) => (100 * x) / calc(x, ratio), attr)
+        new Curve((x, ratio) => (targetValue * x) / calc(x, ratio), attr)
       );
     }
   }
@@ -304,6 +307,7 @@ class CalcMode {
     this.#curves.forEach((v) => graph.drawCurve(v, ratio));
     graph.drawArea((v) => 0.18 * v, "red");
     graph.drawArea((v) => 0.25 * v, "blue", true);
+    graph.drawArea((_) => targetValue, "black", false, 0.4);
     graph.drawPoint(
       new Point(
         [note, this.total(note) * ratio],
@@ -322,7 +326,7 @@ class CalcMode {
     this.#recovCurves.forEach((v) => graph.drawCurve(v, ratio));
     graph.drawArea((_) => 0.18, "red");
     graph.drawArea((_) => 0.25, "blue", true);
-    graph.drawArea((x) => 100 / x, "black", false, 0.4);
+    graph.drawArea((x) => targetValue / x, "black", false, 0.4);
     graph.drawPoint(
       new Point(
         [note, this.recoveryRate(note, ratio)],
@@ -344,13 +348,13 @@ class CalcMode {
     graph.drawArea((x) => x, "black", true, 0.4);
     graph.drawPoint(
       new Point(
-        [note, Math.ceil(100 / this.recoveryRate(note, ratio))],
+        [note, Math.ceil(targetValue / this.recoveryRate(note, ratio))],
         {
           size: 2,
           color: "red",
           withLabel: false,
         },
-        `(${note}, ${Math.ceil(100 / this.recoveryRate(note, ratio))})`,
+        `(${note}, ${Math.ceil(targetValue / this.recoveryRate(note, ratio))})`,
         ["right", "bottom"]
       )
     );
@@ -622,7 +626,7 @@ function refresh(nowCalcMode, note, ratio) {
   const total = nowCalcMode.fixTotal(note, ratio);
   totalElm.value = total.toFixed(2);
   onenote.value = nowCalcMode.fixRecoveryRate(note, ratio).toFixed(6);
-  const recoverNotes = Math.ceil((100 * note) / total);
+  const recoverNotes = Math.ceil((targetValue * note) / total);
   recover.value = recoverNotes;
 
   if (recoverNotes > note) {
@@ -662,7 +666,7 @@ function redrawRequiredGraph() {
   const nowCalcMode = CalcModes[mode.value];
   const total = nowCalcMode.fixTotal(note, ratio);
 
-  requiredGraph.init([note, Math.ceil((100 * note) / total)]);
+  requiredGraph.init([note, Math.ceil((targetValue * note) / total)]);
   CalcModes[mode.value].drawRequired(requiredGraph, note, ratio);
 }
 
@@ -711,6 +715,14 @@ recover.addEventListener("change", (event) => {
     0.01
   );
   ratioElm.value = Math.round(ratio * 1000) / 10;
+  refresh(nowCalcMode, note, ratio);
+});
+
+target.addEventListener("change", (event) => {
+  const nowCalcMode = CalcModes[mode.value];
+  const note = notes.value - 0;
+  const ratio = (ratioElm.value - 0) / 100;
+  targetValue = target.value - 0;
   refresh(nowCalcMode, note, ratio);
 });
 
