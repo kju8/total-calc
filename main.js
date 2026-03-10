@@ -48,7 +48,7 @@ class Curve {
         strokeOpacity: this.#_opacity,
         dash: this.#_dash,
         visible: this.#_visible,
-      }
+      },
     );
   }
 }
@@ -130,7 +130,7 @@ class Graph {
                 ? function (tick, zero) {
                     var value = Math.pow(
                       10,
-                      Math.round(tick.usrCoords[1] - zero.usrCoords[1])
+                      Math.round(tick.usrCoords[1] - zero.usrCoords[1]),
                     );
                     return this.formatLabelText(value);
                   }
@@ -146,7 +146,7 @@ class Graph {
                 ? function (tick, zero) {
                     var value = Math.pow(
                       10,
-                      Math.round(tick.usrCoords[2] - zero.usrCoords[2])
+                      Math.round(tick.usrCoords[2] - zero.usrCoords[2]),
                     );
                     return this.formatLabelText(value);
                   }
@@ -182,7 +182,7 @@ class Graph {
     const line = new Curve(func, { visible: false }).draw(
       this.#graphObj,
       this.#graphMode,
-      1
+      1,
     );
     if (inv || this.#graphMode !== "normal") {
       this.#graphObj.create("inequality", [line], {
@@ -198,7 +198,7 @@ class Graph {
       const line0 = new Curve((_) => 0, { visible: false }).draw(
         this.#graphObj,
         this.#graphMode,
-        1
+        1,
       );
       const area0 = this.#graphObj.create("inequality", [line0], {
         inverse: true,
@@ -249,21 +249,21 @@ class CalcMode {
         color: "black",
         pos: [0],
         recoverOnly: true,
-      }
+      },
     );
     this.#reqCurves.push(
       new Curve(
         (x, ratio) =>
           Math.ceil(
             (100 * targetValue * x) /
-              Math.floor(calculator(Math.floor(x)) * ratio * 100)
+              Math.floor(calculator(Math.floor(x)) * ratio * 100),
           ),
         {
           color: "black",
           pos: [0],
           totalOnly: true,
-        }
-      )
+        },
+      ),
     );
   }
 
@@ -292,7 +292,7 @@ class CalcMode {
     if (!attr.totalOnly) {
       this.#recovCurves.push(new Curve((x, ratio) => calc(x, ratio) / x, attr));
       this.#reqCurves.push(
-        new Curve((x, ratio) => (targetValue * x) / calc(x, ratio), attr)
+        new Curve((x, ratio) => (targetValue * x) / calc(x, ratio), attr),
       );
     }
   }
@@ -317,8 +317,8 @@ class CalcMode {
           withLabel: false,
         },
         `(${note}, ${this.fixTotal(note, ratio).toFixed(2)})`,
-        ["right", "bottom"]
-      )
+        ["right", "bottom"],
+      ),
     );
   }
 
@@ -336,8 +336,8 @@ class CalcMode {
           withLabel: false,
         },
         `(${note}, ${this.fixRecoveryRate(note, ratio).toFixed(6)})`,
-        ["right", "top"]
-      )
+        ["right", "top"],
+      ),
     );
   }
 
@@ -355,15 +355,15 @@ class CalcMode {
           withLabel: false,
         },
         `(${note}, ${Math.ceil(targetValue / this.recoveryRate(note, ratio))})`,
-        ["right", "bottom"]
-      )
+        ["right", "bottom"],
+      ),
     );
   }
 }
 
 function BmCalcMode(fixmode) {
   const mode = new CalcMode(
-    (note) => (Math.floor(TOTAL_FIX[fixmode] / note) * note) / 55
+    (note) => (Math.floor(TOTAL_FIX[fixmode] / note) * note) / 55,
   );
   mode.addCurve((_, ratio) => (TOTAL_FIX[fixmode] * ratio) / 55, {
     color: "red",
@@ -382,7 +382,7 @@ function BmCalcMode(fixmode) {
 const CalcModes = {
   iidx: (() => {
     const mode = new CalcMode((note) =>
-      Math.max(260, (7.605 * note) / (0.01 * note + 6.5))
+      Math.max(260, (7.605 * note) / (0.01 * note + 6.5)),
     );
     mode.addCurve((x, ratio) => (7.605 * x * ratio) / (0.01 * x + 6.5), {
       color: "red",
@@ -409,8 +409,8 @@ const CalcModes = {
       note < 400
         ? 200 + note / 5
         : note < 600
-        ? 280 + (note - 400) / 2.5
-        : 360 + (note - 600) / 5
+          ? 280 + (note - 400) / 2.5
+          : 360 + (note - 600) / 5,
     );
     mode.addCurve((x, ratio) => (200 + x / 5) * ratio, {
       color: "red",
@@ -453,7 +453,7 @@ const CalcModes = {
 
   popn: (() => {
     const mode = new CalcMode(
-      (note) => (note * Math.floor(3072 / note)) / 10.24
+      (note) => (note * Math.floor(3072 / note)) / 10.24,
     );
     mode.addCurve((_, ratio) => 300 * ratio, {
       color: "red",
@@ -471,7 +471,7 @@ const CalcModes = {
 
   lr2: (() => {
     const mode = new CalcMode(
-      (note) => 160.0 + (note + Math.min(Math.max(note - 400, 0), 200)) * 0.16
+      (note) => 160.0 + (note + Math.min(Math.max(note - 400, 0), 200)) * 0.16,
     );
     mode.addCurve((x, ratio) => (160 + x * 0.16) * ratio, {
       color: "red",
@@ -571,7 +571,7 @@ const CalcModes = {
         (Math.max(260, (7.605 * note) / (0.01 * note + 6.5)) *
           (note * Math.floor(3072 / note))) /
         10.24 /
-        300
+        300,
     );
     mode.addCurve((_, ratio) => 260 * ratio, {
       color: "red",
@@ -586,7 +586,7 @@ const CalcModes = {
         opacity: 0.2,
         dash: 2,
         pos: [0, (260 * 6.5) / 5.005],
-      }
+      },
     );
     mode.addCurve((x, ratio) => (7.605 * x * ratio) / (0.01 * x + 6.5), {
       color: "red",
@@ -602,7 +602,7 @@ const CalcModes = {
         opacity: 0.5,
         dash: 2,
         pos: [0, 3072],
-      }
+      },
     );
     return mode;
   })(),
@@ -614,10 +614,25 @@ const CalcModes = {
           (note < 400
             ? 200 + note / 5
             : note < 600
-            ? 280 + (note - 400) / 2.5
-            : 360 + (note - 600) / 5)) /
-        300
+              ? 280 + (note - 400) / 2.5
+              : 360 + (note - 600) / 5)) /
+        300,
     );
+    return mode;
+  })(),
+
+  geometric: (() => {
+    const mode = new CalcMode((note) =>
+      Math.sqrt(
+        Math.max(260, (7.605 * note) / (0.01 * note + 6.5)) *
+          ((Math.floor(14933 / note) * note) / 55),
+      ),
+    );
+    return mode;
+  })(),
+
+  proportion: (() => {
+    const mode = new CalcMode((note) => note);
     return mode;
   })(),
 };
@@ -676,7 +691,7 @@ function redrawRequiredGraph() {
     const note = notes.value - 0;
     const ratio = (ratioElm.value - 0) / 100;
     refresh(nowCalcMode, note, ratio);
-  })
+  }),
 );
 
 totalElm.addEventListener("change", (event) => {
@@ -686,7 +701,7 @@ totalElm.addEventListener("change", (event) => {
   const total_old = nowCalcMode.total(note);
   const ratio = Math.max(
     Math.floor((1000 * total_now) / total_old) / 1000,
-    0.01
+    0.01,
   );
   ratioElm.value = Math.round(ratio * 1000) / 10;
   refresh(nowCalcMode, note, ratio);
@@ -699,7 +714,7 @@ onenote.addEventListener("change", (event) => {
   const total_old = nowCalcMode.total(note);
   const ratio = Math.max(
     Math.floor((1000 * total_now) / total_old) / 1000,
-    0.01
+    0.01,
   );
   ratioElm.value = Math.round(ratio * 1000) / 10;
   refresh(nowCalcMode, note, ratio);
@@ -712,7 +727,7 @@ recover.addEventListener("change", (event) => {
   const total_old = nowCalcMode.total(note);
   const ratio = Math.max(
     Math.ceil((1000 * total_now) / total_old) / 1000,
-    0.01
+    0.01,
   );
   ratioElm.value = Math.round(ratio * 1000) / 10;
   refresh(nowCalcMode, note, ratio);
